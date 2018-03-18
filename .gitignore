@@ -1,0 +1,6 @@
+*.sock
+*.pyc
+.idea/
+*.log
+*.tmp
+*/__pycache__/
