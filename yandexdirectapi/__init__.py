@@ -247,7 +247,11 @@ class DirectAPI5(DirectAPI):
         :param campaign_id: campaign id
         :return: dict of the campaign groups {GroupId: AdGroup}
         """
-        loop = asyncio.get_event_loop()
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
         res = loop.run_until_complete(self.async_get_campaign_groups(campaign_id))
         return res
 
