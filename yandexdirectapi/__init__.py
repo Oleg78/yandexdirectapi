@@ -35,9 +35,16 @@ class DirectAPI:
         'keywords': 'Keywords'
     }
 
-    def __init__(self, login, token):
+    def __init__(self, login, token, max_clients=10):
+        """
+        Create the api instance
+        :param login: Yandex direct login
+        :param token: token
+        :param max_clients: max parallel sessions
+        """
         self.login = login
         self.token = token
+        self.max_clients = max_clients
 
 
 class DirectAPI4(DirectAPI):
@@ -282,9 +289,23 @@ class DirectAPI5(DirectAPI):
         logging.info('Got {} groups for {} campaign'.format(len(res['result']['AdGroups']), campaign_id))
         return {ad_group['Id']: ad_group for ad_group in res['result']['AdGroups']}
 
+    def get_campaign_active_groups(self, campaign_id):
+        """
+        Get active ad groups for the campaign
+        :param campaign_id: Campaign Id
+        :return: set of the campaign active group ids
+        """
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        res = loop.run_until_complete(self.async_get_campaign_active_groups(campaign_id))
+        return res
+
     async def async_get_campaign_active_groups(self, campaign_id):
         """
-        Get active ad groups for a campaign
+        Get active ad groups for the campaign
         :param campaign_id: Campaign Id
         :return: set of the campaign active group ids
         """
