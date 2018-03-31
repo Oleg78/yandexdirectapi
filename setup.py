@@ -8,4 +8,4 @@ setup(name='yandexdirectapi',
       author_email='olegaleksandrovich@ya.ru',
       license='MIT',
       packages=['yandexdirectapi'],
-      zip_safe=False, install_requires=['requests', 'aiohttp'])
+      zip_safe=False, install_requires=['requests', 'asyncio', 'aiohttp'])
