@@ -27,13 +27,6 @@ class DirectAPI:
     login = ''
     token = ''
     max_clients = 10
-    res_name = {
-        'bids': 'Bids',
-        'ads': 'Ads',
-        'adgroups': 'AdGroups',
-        'campaigns': 'Campaigns',
-        'keywords': 'Keywords'
-    }
 
     def __init__(self, login, token, max_clients=10):
         """
@@ -51,7 +44,21 @@ class DirectAPI4(DirectAPI):
     """
     Yandex Direct API v4
     """
-    url = 'https://api-sandbox.direct.yandex.ru/v4/json/'
+    url = 'https://api.direct.yandex.ru/v4/json/'
+    sandbox_url = 'https://api-sandbox.direct.yandex.ru/v4/json/'
+
+    def __init__(self, login, token, max_clients=1, sandbox=True):
+        """
+        Create the api instance
+        :param login: Yandex direct login
+        :param token: token
+        :param max_clients: max parallel sessions
+        :param sandbox: True for sandbox
+        """
+        if sandbox:
+            self.url = self.sandbox_url
+        # v4 async is not implemented
+        super(DirectAPI4, self).__init__(login, token, max_clients)
 
     def run(self, data):
         """
@@ -67,22 +74,10 @@ class DirectAPI4(DirectAPI):
             raise DirectAPIError(res)
         return res
 
-    def get_balance(self):
+    def create_report(self, phrase, geo_id=255):
         """
-        Get the client balance
-        :return: balance (json)
-        """
-        data = {
-            'method': 'GetClientInfo',
-            'token': self.token,
-            'locale': 'ru',
-            'param': [self.login]
-        }
-        return self.run(data)
-
-    def create_report(self, phrase):
-        """
-        Create the wordstat report
+        Create the wordstat report for the one region
+        :param geo_id: 255 is Russia
         :param phrase: phrase for the report
         :return: report id
         """
@@ -92,7 +87,7 @@ class DirectAPI4(DirectAPI):
             'locale': 'ru',
             "param": {
                 "Phrases": [phrase],
-                "GeoID": [225]  # Россия
+                "GeoID": [geo_id]
             }
         }
         res = self.run(data)
@@ -156,9 +151,30 @@ class DirectAPI5(DirectAPI):
     """
     Yandex Direct API v5 Class
     """
-    # url = 'https://api-sandbox.direct.yandex.ru/json/v5/'
+    # address in URL - item name in the result
+    res_name = {
+        'bids': 'Bids',
+        'ads': 'Ads',
+        'adgroups': 'AdGroups',
+        'campaigns': 'Campaigns',
+        'keywords': 'Keywords'
+    }
+
     url = 'https://api.direct.yandex.com/json/v5/'
+    sandbox_url = 'https://api-sandbox.direct.yandex.com/json/v5/'
     units = ''
+
+    def __init__(self, login, token, max_clients=10, sandbox=False):
+        """
+        Create the api instance
+        :param login: Yandex direct login
+        :param token: token
+        :param max_clients: max parallel sessions
+        :param sandbox: True for sandbox
+        """
+        if sandbox:
+            self.url = self.sandbox_url
+        super(DirectAPI5, self).__init__(login, token, max_clients)
 
     def run(self, address, data):
         """
@@ -212,7 +228,7 @@ class DirectAPI5(DirectAPI):
                 logging.info('Request: {}/{} Units: {}'.format(address, data.get('method', 'report'), self.units))
         return res
 
-    def get_campaigns(self, campaigns):
+    def get_campaigns(self, campaigns=None):
         """
         Get the campaigns
         :param campaigns: To get all the campaigns set the 'campaigns' parameter to None
