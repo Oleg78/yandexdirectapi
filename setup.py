@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='yandexdirectapi',
-      version='0.1',
+      version='0.1.1',
       description='Yandex Direct API',
       url='https://github.com/Oleg78/yandexdirectapi.git',
       author='Oleg78',
