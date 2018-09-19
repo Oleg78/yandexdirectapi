@@ -400,7 +400,7 @@ class DirectAPI5(DirectAPI):
             curr_group_ids = group_ids[g * max_groups:g * max_groups + max_groups]
             futures = []
             groups_per_client = int(math.ceil(len(curr_group_ids) / self.max_clients))
-            for i in range(self.max_clients):
+            for i in range(min(self.max_clients, int(len(curr_group_ids) / groups_per_client))):
                 logging.info('{}. Get bids for {}-{} groups'.format(i + 1,
                                                                     i * groups_per_client,
                                                                     i * groups_per_client + groups_per_client))
